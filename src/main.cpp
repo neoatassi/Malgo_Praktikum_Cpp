@@ -12,12 +12,11 @@
 
 
 
-void processFile(const std::string& filepath, void (Graph::*traverseFn)(int), const std::string& algoName)
+Graph loadGraph(const std::string& filepath)
 {
     std::ifstream file(filepath);
     if (!file) {
-        std::cerr << "Could not open file: " << filepath << "\n";
-        return;
+        throw std::runtime_error("Could not open file: " + filepath);
     }
  
     int count;
@@ -28,25 +27,27 @@ void processFile(const std::string& filepath, void (Graph::*traverseFn)(int), co
 
     std::cout << "Reading from file..  " << "\n";
     int v1, v2;
+
+    auto start = std::chrono::high_resolution_clock::now();
+
     while (file >> v1 >> v2) {
         graph.addEdge(v1, v2);
     }
  
+    auto end = std::chrono::high_resolution_clock::now();
+
     file.close();
  
     std::cout << "Graph saved!" << "\n";
-    
-    auto start = std::chrono::high_resolution_clock::now();
-    int result = graph.mod_components(traverseFn);
-    auto end = std::chrono::high_resolution_clock::now();
- 
+
     double ms = std::chrono::duration<double, std::milli>(end - start).count();
- 
-    std::cout << "[" << algoName << "] "
-              << filepath
+
+
+    std::cout << filepath
               << " | nodes: " << count
-              << " | components: " << result
-              << " | time: " << ms << " ms\n";
+              << " | reading time: " << ms << " ms\n";
+    
+    return graph;
 }
  
 
@@ -84,8 +85,9 @@ int main(int argc, char* argv[])
     
     filepath = argv[1];
 
-    processFile(filepath, traverseFn, algoName);
+    Graph graph = loadGraph(filepath);
     
+    std::cout << graph.mod_components(traverseFn);
  
     return 0;
 }
