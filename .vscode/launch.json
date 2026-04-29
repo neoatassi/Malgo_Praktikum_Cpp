@@ -5,7 +5,8 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug",
-            "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
+            //"program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
+            "program": "${workspaceFolder}/bin/main",
             "args": ["${input:graphFile}"],
             "cwd": "${workspaceFolder}"
         }

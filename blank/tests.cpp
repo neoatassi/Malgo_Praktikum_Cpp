@@ -1,5 +1,5 @@
-#include "tests.h"
-#include "graph.h"
+#include "../include/tests.h"
+#include "../include/graph.h"
 void assertEqual(int expected, int actual, const std::string& testName)
 {
     if (expected == actual) {
@@ -19,7 +19,7 @@ void runTests()
     {
         Graph g(1);
         assertEqual(1, g.mod_components(&Graph::DFS), "DFS | single node");
-        g.reset();
+        // g.reset();
         assertEqual(1, g.mod_components(&Graph::BFS), "BFS | single node");
     }
  
@@ -30,7 +30,7 @@ void runTests()
         g.addEdge(1, 2);
         g.addEdge(2, 3);
         assertEqual(1, g.mod_components(&Graph::DFS), "DFS | fully connected (chain)");
-        g.reset();
+        // g.reset();
         assertEqual(1, g.mod_components(&Graph::BFS), "BFS | fully connected (chain)");
     }
  
@@ -38,7 +38,7 @@ void runTests()
     {
         Graph g(5);
         assertEqual(5, g.mod_components(&Graph::DFS), "DFS | no edges, 5 isolated nodes");
-        g.reset();
+        // g.reset();
         assertEqual(5, g.mod_components(&Graph::BFS), "BFS | no edges, 5 isolated nodes");
     }
  
@@ -50,7 +50,7 @@ void runTests()
         g.addEdge(3, 4);
         g.addEdge(4, 5);
         assertEqual(2, g.mod_components(&Graph::DFS), "DFS | two mod_components");
-        g.reset();
+        // g.reset();
         assertEqual(2, g.mod_components(&Graph::BFS), "BFS | two mod_components");
     }
  
@@ -62,7 +62,7 @@ void runTests()
         g.addEdge(3, 4);
         // node 5 and 6 are isolated
         assertEqual(4, g.mod_components(&Graph::DFS), "DFS | three mod_components + two isolated nodes");
-        g.reset();
+        // g.reset();
         assertEqual(4, g.mod_components(&Graph::BFS), "BFS | three mod_components + two isolated nodes");
     }
  

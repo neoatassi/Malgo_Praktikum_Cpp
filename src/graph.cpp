@@ -6,7 +6,7 @@
 // #include <chrono>
 // #include <queue>
 
-#include "graph.h"
+#include "../include/graph.h"
 
 
 
@@ -21,7 +21,7 @@
     {
         count = vertices;
         adjList.resize(vertices);
-        visited.resize(vertices);
+        //visited.resize(vertices);
     }
 
     void Graph::addEdge(int src, int dest)
@@ -30,15 +30,15 @@
         adjList[dest].push_back(src);
     }
 
-    void Graph::reset()
-    {
-        std::fill(visited.begin(), visited.end(), false);
-    }
-
-    // auto& getAdjList()
+    // void Graph::reset()
     // {
-    //     return this->adjList;
+    //     std::fill(visited.begin(), visited.end(), false);
     // }
+
+    const std::vector<std::vector<int>>& Graph::getAdjList() const
+    {
+        return adjList;
+    }
 
     // auto& getVisited()
     // {
@@ -50,14 +50,15 @@
     //     return this->count;
     // }
 
-    void Graph::DFS (int vertex)
+    void Graph::DFS (int vertex, std::vector<char>& visited)
     {
+        //std::vector<bool> visited (this->count);
         //visited[vertex] = true;    
         
         std::stack<int> stack;
         stack.push(vertex);
 
-        visited[vertex] = true;
+        visited[vertex] = '1';
 
         //std::cout << vertex << " ";
         while (!stack.empty()){
@@ -66,20 +67,23 @@
             stack.pop();
 
             for (int neighbor : adjList[vertex]){
-                if (!visited[neighbor]) {
+                if (visited[neighbor] != '1') {
                     //std::cout << "\n";
                     stack.push(neighbor);
-                    visited[neighbor] = true;
+                    visited[neighbor] = '1';
                 }
             }
         }
     }
 
-    void Graph::BFS(int vertex)
+    void Graph::BFS(int vertex, std::vector<char>& visited)
     {
+
+        //std::vector<bool> visited (this->count);
+
         std::queue<int> queue;
         queue.push(vertex);
-        visited[vertex] = true;
+        visited[vertex] = '1';
  
         //std::cout << vertex << " ";
 
@@ -89,10 +93,10 @@
             queue.pop();
  
             for (int neighbor : adjList[vertex]) {
-                if (!visited[neighbor]) {
+                if (visited[neighbor] != '1') {
                     //std::cout << "\n";
                     queue.push(neighbor);
-                    visited[neighbor] = true;
+                    visited[neighbor] = '1';
                 }
             }
         }
@@ -100,29 +104,47 @@
     
     int Graph::components()
     {
+        std::vector<char> visited (this->count);
+
+
+        auto start = std::chrono::high_resolution_clock::now();
+
         int counter = 0;
         for (int i = 0; i < this->count; ++i)
         {
             if (!visited[i]){
                 //DFS(i);
-                BFS(i);
+                BFS(i, visited);
                 counter++;
             }
         }
+
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        std::cout << "Processed in " << ms << " ms" << "\n";
         return counter;
     }
 
-    int Graph::mod_components(void (Graph::*traverseFn)(int))
+    int Graph::mod_components(void (Graph::*traverseFn)(int, std::vector<char>&))
     {
+
+        std::vector<char> visited (this->count, '0');
+
         std::cout << "Processing..  " << "\n";
+        auto start = std::chrono::high_resolution_clock::now();
         int counter = 0;
         for (int i = 0; i < count; ++i) {
-            if (!visited[i]) {
-                (this->*traverseFn)(i);
+            if (visited[i] != '1') {
+                (this->*traverseFn)(i, visited);
                 counter++;
             }
         }
         std::cout << "Done!" << "\n";
+
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        std::cout << "Processed in " << ms << " ms" << "\n";
+
         return counter;
     }
 

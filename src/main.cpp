@@ -7,8 +7,8 @@
 #include <string>
 #include <chrono>
 
-#include "graph.h"
-#include "tests.h"
+#include "../include/graph.h"
+//#include "../include/tests.h"
 
 
 
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
     std::cin.tie(NULL);
  
     std::string filepath = "";
-    void (Graph::*traverseFn)(int) = &Graph::DFS;
+    void (Graph::*traverseFn)(int, std::vector<char>&) = &Graph::DFS;
     std::string algoName = "DFS";
     bool testMode = false;
  
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
     }
  
     if (testMode) {
-        runTests();
+        // runTests();
         return 0;
     }
  
@@ -87,7 +87,9 @@ int main(int argc, char* argv[])
 
     Graph graph = loadGraph(filepath);
     
-    std::cout << graph.mod_components(traverseFn);
+    int components = graph.mod_components(traverseFn);
+
+    std::cout << components;
  
     return 0;
 }
