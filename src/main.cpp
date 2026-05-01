@@ -2,12 +2,13 @@
 
 #include <iostream>
 #include <fstream>
-#include <filesystem>
+//#include <filesystem>
 #include <vector>
 #include <string>
 #include <chrono>
 
 #include "../include/graph.h"
+#include "../include/components.h"
 //#include "../include/tests.h"
 
 
@@ -54,21 +55,25 @@ Graph loadGraph(const std::string& filepath)
  
 int main(int argc, char* argv[])
 {
+
+    // Disables cout buffering. Prints out statements on the go rather than after program terminates
+    std::cout.setf(std::ios::unitbuf);
+
     std::ios::sync_with_stdio(false);
     std::cin.tie(NULL);
  
     std::string filepath = "";
-    void (Graph::*traverseFn)(int, std::vector<char>&) = &Graph::DFS;
+    void (*traverseFn)(const Graph&, int, std::vector<char>&) = DFS;
     std::string algoName = "DFS";
     bool testMode = false;
  
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--bfs") {
-            traverseFn = &Graph::BFS;
+            traverseFn = BFS;
             algoName = "BFS";
         } else if (arg == "--dfs") {
-            traverseFn = &Graph::DFS;
+            traverseFn = DFS;
             algoName = "DFS";
         } else if (arg == "--test") {
             testMode = true;
@@ -87,7 +92,9 @@ int main(int argc, char* argv[])
 
     Graph graph = loadGraph(filepath);
     
-    int components = graph.mod_components(traverseFn);
+    //int components = graph.mod_components(traverseFn);
+
+    int components = mod_components(graph, traverseFn);
 
     std::cout << components;
  
