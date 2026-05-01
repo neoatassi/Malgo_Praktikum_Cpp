@@ -9,17 +9,29 @@
 #include <queue>
 #include <algorithm>
 
+using std::vector;
+
+// Seperate struct for weighted edges for Kruskal
+struct Weighted {
+    int src, dest;
+    double weight;
+};
+
 class Graph {
     private:
-    int count;
-    std::vector<std::vector<int>> adjList;
+    int nodeCount;
+    int edgeCount;
+    vector<vector<int>> adjList;
+    vector<Weighted> edges; 
 
     public:
-    Graph(int vertices);
+    Graph(int nodeCount);
+    Graph(int nodeCount, int edgeCount);
 
-    void addEdge(int src, int dest);
+    void addEdge(int src, int dest, double weight);
 
-    const std::vector<std::vector<int>>& getAdjList() const;
+    const vector<vector<int>>& getAdjList() const;
+    const vector<Weighted>& getEdges() const;
 
     int getCount() const;
 

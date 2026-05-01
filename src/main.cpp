@@ -2,7 +2,8 @@
 
 #include <iostream>
 #include <fstream>
-//#include <filesystem>
+#include <sstream>
+#include <filesystem>
 #include <vector>
 #include <string>
 #include <chrono>
@@ -11,7 +12,22 @@
 #include "../include/components.h"
 //#include "../include/tests.h"
 
+std::pair<int, int> parseFilename(const std::string& filepath)
+{
+    std::string filename = std::filesystem::path(filepath).stem().string(); // "G_1_200"
+    
+    std::istringstream iss(filename);
+    std::string part;
 
+    std::getline(iss, part, '_'); // "G"
+    std::getline(iss, part, '_'); // "1"
+    int nodes = std::stoi(part) * 1000;
+
+    std::getline(iss, part, '_'); // "200"
+    int edges = std::stoi(part) * 1000;
+
+    return {nodes, edges};
+}
 
 Graph loadGraph(const std::string& filepath)
 {
@@ -20,20 +36,38 @@ Graph loadGraph(const std::string& filepath)
         throw std::runtime_error("Could not open file: " + filepath);
     }
  
-    int count;
-    file >> count;
+    int nodeCount, edgeCount = 0;
+    file >> nodeCount;
+    file.ignore();
  
-    Graph graph(count);
+    if (filepath.find("MST") != std::string::npos) {
+        std::cout << "MST DETECTED";
+        nodeCount = parseFilename(filepath).first;
+        edgeCount = parseFilename(filepath).second;
+    }
     
+    Graph graph(nodeCount, edgeCount);
 
     std::cout << "Reading from file..  " << "\n";
     int v1, v2;
+    double w = 0;
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    while (file >> v1 >> v2) {
-        graph.addEdge(v1, v2);
-    }
+    // while (file >> v1 >> v2 >> w) {
+    //     graph.addEdge(v1, v2, w);
+    // }
+
+    std::string line;
+    do {
+        if (line.empty()) continue;
+
+        std::istringstream iss(line);
+        iss >> v1 >> v2;
+        iss >> w;
+
+        graph.addEdge(v1, v2, w);
+    } while (std::getline(file, line));
  
     auto end = std::chrono::high_resolution_clock::now();
 
@@ -45,7 +79,7 @@ Graph loadGraph(const std::string& filepath)
 
 
     std::cout << filepath
-              << " | nodes: " << count
+              << " | nodes: " << nodeCount
               << " | reading time: " << ms << " ms\n";
     
     return graph;
@@ -94,6 +128,7 @@ int main(int argc, char* argv[])
     
     //int components = graph.mod_components(traverseFn);
 
+    return 0;
     int components = mod_components(graph, traverseFn);
 
     std::cout << components;
