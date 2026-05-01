@@ -31,9 +31,9 @@
     }
 
     const std::vector<Weighted>& Graph::getEdges() const
-{
-    return edges;
-}
+    {
+        return edges;
+    }
 
     int Graph::getCount() const
     {

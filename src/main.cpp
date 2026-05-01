@@ -10,6 +10,7 @@
 
 #include "../include/graph.h"
 #include "../include/components.h"
+#include "../include/mst.h"
 //#include "../include/tests.h"
 
 std::pair<int, int> parseFilename(const std::string& filepath)
@@ -125,13 +126,13 @@ int main(int argc, char* argv[])
     filepath = argv[1];
 
     Graph graph = loadGraph(filepath);
+
+    // int components = mod_components(graph, traverseFn);
+    //std::cout << components;
     
-    //int components = graph.mod_components(traverseFn);
+    double mstWeight = kruskal(graph);
 
-    return 0;
-    int components = mod_components(graph, traverseFn);
+    std::cout << "Total MST Weight: " << mstWeight << "\n";
 
-    std::cout << components;
- 
     return 0;
 }
