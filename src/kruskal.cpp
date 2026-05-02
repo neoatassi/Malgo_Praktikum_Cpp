@@ -74,7 +74,8 @@ double kruskal (const Graph& graph){
     auto end = std::chrono::high_resolution_clock::now();
     double ms = std::chrono::duration<double, std::milli>(end - start).count();
 
-    std::cout << "Processed MST in " << ms << "ms" << "\n"; 
+    debugLog("Processed MST in " + std::to_string(ms) + "ms");
+    // std::cout << "Processed MST in " << ms << "ms" << "\n"; 
 
     return mst;
 }

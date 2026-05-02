@@ -1,4 +1,5 @@
 #include "../include/graph.h"
+#include "../include/debug.h"
 
 #pragma once
 
