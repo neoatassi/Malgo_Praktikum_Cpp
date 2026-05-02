@@ -1,10 +1,11 @@
 #include "../include/graph.h"
+#include <vector>
 
     Graph::Graph(int nodeCount)
     {
         this->nodeCount = nodeCount;
         adjList.resize(nodeCount);
-        //visited.resize(vertices);
+        //weightedAdjList.resize(nodeCount);
     }
 
     Graph::Graph(int nodeCount, int edgeCount)
@@ -12,6 +13,7 @@
         this->nodeCount = nodeCount;
         this->edgeCount = edgeCount;
         adjList.resize(nodeCount);
+        weightedAdjList.resize(nodeCount);
         edges.reserve(edgeCount);
         //visited.resize(vertices);
     }
@@ -21,13 +23,22 @@
         adjList[src].push_back(dest);
         adjList[dest].push_back(src);
         
-        if (edgeCount != 0)
+        if (edgeCount != 0) {
+            weightedAdjList[src].push_back({dest, weight});
+            weightedAdjList[dest].push_back({src, weight});
+
             edges.push_back({src, dest, weight});
+        }
     }
 
     const std::vector<std::vector<int>>& Graph::getAdjList() const
     {
         return this->adjList;
+    }
+
+    const vector<vector<pair<int, double>>>& Graph::getWeightedAdjList() const
+    {
+        return this->weightedAdjList;
     }
 
     const std::vector<Weighted>& Graph::getEdges() const

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "../include/graph.h"
+#include "../include/debug.h"
 
 // std::vector<std::string> getGraphFiles();
 // std::vector<std::string> promptFileSelection();

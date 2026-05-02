@@ -7,7 +7,7 @@
             "name": "Debug",
             //"program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
             "program": "${workspaceFolder}/bin/main",
-            "args": ["${input:graphFile}"],
+            "args": ["--algo ${input:algorithm} --dir ${input:graphFile} ${input:test}"],
             "cwd": "${workspaceFolder}"
         }
     ],
@@ -16,6 +16,16 @@
         "id": "graphFile",
         "type": "promptString",
         "description": "Path to graph input file"
+    },
+    {
+        "id": "algorithm",
+        "type": "promptString",
+        "description": "Processing algorithm"
+    },
+    {
+        "id": "test",
+        "type": "promptString",
+        "description": "Whether to run in test mode"
     }
 ]
 }

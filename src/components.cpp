@@ -59,14 +59,14 @@ void DFS (const Graph& graph, int vertex, std::vector<char>& visited)
         }
     }
 
-    int mod_components(const Graph& graph, void (*traverseFn)(const Graph&, int, std::vector<char>&))
+    int countComponents(const Graph& graph, void (*traverseFn)(const Graph&, int, std::vector<char>&))
     {
 
         const int& vcount = graph.getCount();
 
         std::vector<char> visited (vcount, '0');
 
-        std::cout << "Processing..  " << "\n";
+        debugLog("Processing..  ");
         auto start = std::chrono::high_resolution_clock::now();
         int components = 0;
         for (int i = 0; i < vcount; ++i) {
@@ -75,11 +75,11 @@ void DFS (const Graph& graph, int vertex, std::vector<char>& visited)
                 components++;
             }
         }
-        std::cout << "Done!" << "\n";
+        debugLog("Done!");
 
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
-        std::cout << "Processed in " << ms << " ms" << "\n";
+        debugLog("Processed in " + std::to_string(ms) + " ms");
 
         return components;
     }

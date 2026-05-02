@@ -60,7 +60,7 @@ Graph loadGraph(const std::string& filepath)
     file.ignore();
  
     if (filepath.find("MST") != std::string::npos) {
-        std::cout << "MST FILENAME CONVENTION DETECTED\n";
+        debugLog("MST FILENAME CONVENTION DETECTED");
         nodeCount = parseFilename(filepath).first;
         edgeCount = parseFilename(filepath).second;
     }

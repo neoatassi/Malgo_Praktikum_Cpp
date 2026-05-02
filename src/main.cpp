@@ -11,9 +11,10 @@
 #include "../include/graph.h"
 #include "../include/components.h"
 #include "../include/kruskal.h"
+#include "../include/prim.h"
 #include "../include/files.h"
 #include "../include/debug.h"
-//#include "../include/tests.h"
+#include "../include/tests.h"
 
 void printUsage(const char* programName)
 {
@@ -32,14 +33,14 @@ void printUsage(const char* programName)
     auto start = std::chrono::high_resolution_clock::now();
 
     if (algo == "dfs") {
-        int result = mod_components(graph, &DFS);
+        int result = countComponents(graph, &DFS);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         std::cout << "[DFS] " << filename << " | components: " << result
                   << " | time: " << ms << " ms\n";
 
     } else if (algo == "bfs") {
-        int result = mod_components(graph, &BFS);
+        int result = countComponents(graph, &BFS);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         std::cout << "[BFS] " << filename << " | components: " << result
@@ -52,6 +53,12 @@ void printUsage(const char* programName)
         std::cout << "[Kruskal] " << filename << " | MST weight: " << result
                   << " | time: " << ms << " ms\n";
 
+    } else if (algo == "prim") {
+        double result = prim(graph);
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        std::cout << "[PRIM] " << filename << " | MST weight: " << result
+                  << " | time: " << ms << " ms\n";
     } else {
         std::cerr << "Unknown algorithm: " << algo << "\n";
     }
@@ -96,7 +103,11 @@ int main(int argc, char* argv[])
     }
 
     if (testMode) {
-        // runTests();
+        if (algo.empty()) {
+            std::cerr << "Specify an algorithm to test: --algo <dfs|bfs|kruskal|prim> --test\n";
+            return 1;
+        }
+        runTests(directory, algo);
         return 0;
     }
 
