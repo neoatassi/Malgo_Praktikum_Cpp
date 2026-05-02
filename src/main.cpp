@@ -10,7 +10,7 @@
 
 #include "../include/graph.h"
 #include "../include/components.h"
-#include "../include/mst.h"
+#include "../include/kruskal.h"
 //#include "../include/tests.h"
 
 std::pair<int, int> parseFilename(const std::string& filepath)
