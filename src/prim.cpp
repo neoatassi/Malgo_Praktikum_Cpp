@@ -15,6 +15,7 @@ double prim(const Graph& graph)
     int edgesAdded = 0;
 
     // start from node 0
+    // hier aufpassen für P3
     minHeap.push({0.0, 0});
 
     while (!minHeap.empty() && edgesAdded < n) {

@@ -103,10 +103,10 @@ int main(int argc, char* argv[])
     }
 
     if (testMode) {
-        if (algo.empty()) {
-            std::cerr << "Specify an algorithm to test: --algo <dfs|bfs|kruskal|prim> --test\n";
-            return 1;
-        }
+        // if (algo.empty()) {
+        //     std::cerr << "Specify an algorithm to test: --algo <dfs|bfs|kruskal|prim> --test\n";
+        //     return 1;
+        // }
         runTests(directory, algo);
         return 0;
     }
