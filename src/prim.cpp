@@ -1,5 +1,7 @@
 #include "../include/prim.h"
 
+#include <cstdlib>
+
 double prim(const Graph& graph)
 {
     int n = graph.getCount();
@@ -16,9 +18,12 @@ double prim(const Graph& graph)
 
     // start from node 0
     // hier aufpassen für P3
-    minHeap.push({0.0, 0});
+    int startNode = rand() % graph.getCount();
+    //Edge startingNode = (adjList[startSeed][0].second, adjList[startSeed][0].first);
+    // minHeap.push({0.0, 0});
+    minHeap.push({0.0, startNode});
 
-    while (!minHeap.empty() && edgesAdded < n) {
+    while (!minHeap.empty()) {
         auto [weight, vertex] = minHeap.top();
         minHeap.pop();
 
