@@ -21,11 +21,17 @@ void DFS (const Graph& graph, int vertex, std::vector<char>& visited)
             vertex = stack.top();
             stack.pop();
 
-            for (int neighbor : adjList[vertex]){
-                if (visited[neighbor] != '1') {
-                    //std::cout << "\n";
-                    stack.push(neighbor);
-                    visited[neighbor] = '1';
+            // for (int neighbor : adjList[vertex]){
+            //     if (visited[neighbor] != '1') {
+            //         //std::cout << "\n";
+            //         stack.push(neighbor);
+            //         visited[neighbor] = '1';
+            //     }
+            // }
+
+            for (auto& neighbor : graph.getNode(vertex)->getNeighbors()){
+                if(visited[neighbor->dest->getID()] != '1'){
+                    stack.push(neighbor->dest->getID());
                 }
             }
         }

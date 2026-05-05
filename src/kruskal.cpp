@@ -1,4 +1,5 @@
 #include "../include/kruskal.h"
+#include <memory>
 //#include <numeric>
 
 using std::vector;
@@ -39,30 +40,34 @@ struct UnionFind {
 };
 
 double kruskal (const Graph& graph){
-    
+
     auto start = std::chrono::high_resolution_clock::now();
 
     double mst = 0;
     int addedEdges = 0;
 
-    vector<Weighted> edges = graph.getEdges();
+    vector<Edge*> sortedEdges;
 
-    std::sort(edges.begin(), edges.end(),
-        [](const auto& e1, const auto& e2) {
-        return e1.weight < e2.weight;
+    for (const auto& edgePtr : graph.getEdges()) {
+        sortedEdges.push_back(edgePtr.get());
+    }
+
+    std::sort(sortedEdges.begin(), sortedEdges.end(),
+        [](const Edge* e1, const Edge* e2) {
+        return e1->weight < e2->weight;
     });
 
     // make a set for every node
     UnionFind uf(graph.getCount());
 
-    for (const Weighted& edge: edges){
+    for (Edge* edge: sortedEdges){
 
-        int u = uf.find(edge.src);
-        int v = uf.find(edge.dest);
+        int u = uf.find(edge->src->getID());
+        int v = uf.find(edge->dest->getID());
 
         if (u != v) {
             uf.unite(u, v);
-            mst += edge.weight;
+            mst += edge->weight;
             addedEdges++;
 
             // stops after reaching e = n - 1, otherwise creates cycles
@@ -79,3 +84,45 @@ double kruskal (const Graph& graph){
 
     return mst;
 }
+
+// double kruskal (const Graph& graph){
+    
+    // auto start = std::chrono::high_resolution_clock::now();
+
+    // double mst = 0;
+    // int addedEdges = 0;
+
+    // vector<Weighted> edges = graph.getEdges();
+
+    // std::sort(edges.begin(), edges.end(),
+        // [](const auto& e1, const auto& e2) {
+        // return e1.weight < e2.weight;
+    // });
+
+    // // make a set for every node
+    // UnionFind uf(graph.getCount());
+
+    // for (const Weighted& edge: edges){
+
+        // int u = uf.find(edge.src);
+        // int v = uf.find(edge.dest);
+
+        // if (u != v) {
+            // uf.unite(u, v);
+            // mst += edge.weight;
+            // addedEdges++;
+
+            // // stops after reaching e = n - 1, otherwise creates cycles
+            // if (addedEdges == graph.getCount() - 1)
+                // break;
+        // }
+    // }
+
+    // auto end = std::chrono::high_resolution_clock::now();
+    // double ms = std::chrono::duration<double, std::milli>(end - start).count();
+
+    // debugLog("Processed MST in " + std::to_string(ms) + "ms");
+    // // std::cout << "Processed MST in " << ms << "ms" << "\n"; 
+
+    // return mst;
+// }

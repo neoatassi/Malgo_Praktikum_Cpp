@@ -27,34 +27,38 @@ void printUsage(const char* programName)
 
  void processFile(const std::string& filepath, const std::string& algo)
 {
-    Graph graph = loadGraph(filepath);
+    std::unique_ptr<Graph> graph;
     std::string filename = std::filesystem::path(filepath).filename().string();
 
     auto start = std::chrono::high_resolution_clock::now();
 
     if (algo == "dfs") {
-        int result = countComponents(graph, &DFS);
+        graph = loadGraph(filepath, "UndirectedGraph");
+        int result = countComponents(*graph, &DFS);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         std::cout << "[DFS] " << filename << " | components: " << result
                   << " | time: " << ms << " ms\n";
 
     } else if (algo == "bfs") {
-        int result = countComponents(graph, &BFS);
+        graph = loadGraph(filepath, "UndirectedGraph");
+        int result = countComponents(*graph, &BFS);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         std::cout << "[BFS] " << filename << " | components: " << result
                   << " | time: " << ms << " ms\n";
 
     } else if (algo == "kruskal") {
-        double result = kruskal(graph);
+        graph = loadGraph(filepath, "UndirectedGraph");
+        double result = kruskal(*graph);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         std::cout << "[Kruskal] " << filename << " | MST weight: " << result
                   << " | time: " << ms << " ms\n";
 
     } else if (algo == "prim") {
-        double result = prim(graph);
+        graph = loadGraph(filepath, "UndirectedGraph");
+        double result = prim(*graph);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         std::cout << "[PRIM] " << filename << " | MST weight: " << result

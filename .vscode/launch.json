@@ -7,7 +7,40 @@
             "name": "Debug",
             //"program": "${workspaceFolder}/bin/${fileBasenameNoExtension}",
             "program": "${workspaceFolder}/bin/main",
-            "args": ["--algo ${input:algorithm} --dir ${input:graphFile} ${input:test}"],
+            "args": ["--algo", "${input:algorithm}", "--file", "${input:graphFile}"],
+            //"args": ["--algo", "kruskal", "--file", "Graph/MST/G_1_2.txt"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Kruskal",
+            "program": "${workspaceFolder}/bin/main",
+            "args": ["--algo", "kruskal", "--dir", "Graph/MST"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug DFS",
+            "program": "${workspaceFolder}/bin/main",
+            "args": ["--algo", "dfs", "--dir", "Graph/Components"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Tests Kruskal",
+            "program": "${workspaceFolder}/bin/main",
+            "args": ["--algo", "kruskal", "--test"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Single File",
+            "program": "${workspaceFolder}/bin/main",
+            "args": ["--algo", "kruskal", "--file", "Graph/MST/G_1_2.txt"],
             "cwd": "${workspaceFolder}"
         }
     ],

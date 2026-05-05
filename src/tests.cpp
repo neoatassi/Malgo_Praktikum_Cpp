@@ -3,6 +3,7 @@
 #include <cmath>
 #include <filesystem>
 #include <map>
+#include <memory>
 #include <string>
 #include "../include/tests.h"
 
@@ -42,10 +43,10 @@ static void runComponentTests(const std::string& directory, void (*traverseFn)(c
         }
 
         try {
-            Graph graph = loadGraph(filepath);
+            std::unique_ptr<Graph> graph = loadGraph(filepath, "UndirectedGraph");
 
             auto start = std::chrono::high_resolution_clock::now();
-            int result = countComponents(graph, traverseFn);
+            int result = countComponents(*graph, traverseFn);
             auto end = std::chrono::high_resolution_clock::now();
             double ms = std::chrono::duration<double, std::milli>(end - start).count();
 
@@ -138,10 +139,10 @@ void runMSTTests(const std::string& directory, double (*mstFn)(const Graph&), co
         else expected = expectedResultsPrim[filename];
 
         try {
-            Graph graph = loadGraph(filepath);
+            std::unique_ptr<Graph> graph = loadGraph(filepath, "UndirectedGraph");
 
             auto start = std::chrono::high_resolution_clock::now();
-            double result = mstFn(graph);
+            double result = mstFn(*graph);
             auto end = std::chrono::high_resolution_clock::now();
             double ms = std::chrono::duration<double, std::milli>(end - start).count();
 

@@ -1,4 +1,5 @@
 #include "../include/graph.h"
+#include <memory>
 #include <vector>
 
     Graph::Graph(int nodeCount)
@@ -6,29 +7,101 @@
         this->nodeCount = nodeCount;
         adjList.resize(nodeCount);
         //weightedAdjList.resize(nodeCount);
+
+        nodes.reserve(nodeCount);
+        for (int i = 0; i < nodeCount; ++i)
+            nodes.emplace_back(std::make_unique<Node>(i));
     }
 
-    Graph::Graph(int nodeCount, int edgeCount)
-    {
-        this->nodeCount = nodeCount;
-        this->edgeCount = edgeCount;
-        adjList.resize(nodeCount);
-        weightedAdjList.resize(nodeCount);
-        edges.reserve(edgeCount);
-        //visited.resize(vertices);
-    }
+    // Graph::Graph(int nodeCount, int edgeCount)
+    // {
+    //     this->nodeCount = nodeCount;
+    //     this->edgeCount = edgeCount;
+    //     adjList.resize(nodeCount);
+    //     weightedAdjList.resize(nodeCount);
+    //     wEdges.reserve(edgeCount);
+    //     //visited.resize(vertices);
+    // }
 
-    void Graph::addEdge(int src, int dest, double weight)
-    {
-        adjList[src].push_back(dest);
-        adjList[dest].push_back(src);
+    // void Graph::addEdge(int src, int dest, double weight)
+    // {
+    //     adjList[src].push_back(dest);
+    //     adjList[dest].push_back(src);
         
-        if (edgeCount != 0) {
-            weightedAdjList[src].push_back({dest, weight});
-            weightedAdjList[dest].push_back({src, weight});
+    //     if (edgeCount != 0) {
+    //         weightedAdjList[src].push_back({dest, weight});
+    //         weightedAdjList[dest].push_back({src, weight});
 
-            edges.push_back({src, dest, weight});
+    //         wEdges.push_back({src, dest, weight});
+    //     }
+    // }
+
+    
+    void UndirectedGraph::addEdge(int src, int dest, double weight)
+    {
+        // nodes.push_back(std::make_unique<Node>(src));
+        // nodes.push_back(std::make_unique<Node>(dest));
+        //Node* srcNode = nodes.emplace_back(std::make_unique<Node>(src)).get();
+        //Node* destNode = nodes.emplace_back(std::make_unique<Node>(dest)).get();
+
+        // constructes an edge object and adds it to vector in on line
+        
+        // std::cerr << "nodes size: " << nodes.size()
+        //       << " src: " << src
+        //       << " dest: " << dest << "\n";
+
+        if (src >= (int)nodes.size() || dest >= (int)nodes.size()) {
+            throw std::runtime_error("Node index out of bounds");
         }
+
+        
+        Edge* fwdPtr = edges.emplace_back(std::make_unique<Edge>()).get();
+        Edge* bwdPtr = edges.emplace_back(std::make_unique<Edge>()).get();
+
+
+        // Node* srcNode = nodes[src].get();
+        // Node* destNode = nodes[dest].get();
+        
+        fwdPtr->src = nodes[src].get();
+        fwdPtr->dest = nodes[dest].get();
+        fwdPtr->weight = weight;
+
+        bwdPtr->src = nodes[dest].get();
+        bwdPtr->dest = nodes[src].get();
+        bwdPtr->weight = weight;
+
+        nodes[src]->setNeighbor(fwdPtr);
+        nodes[dest]->setNeighbor(bwdPtr);
+    }
+
+    void DirectedGraph::addEdge(int src, int dest, double weight)
+    {
+        // nodes.push_back(std::make_unique<Node>(src));
+        // nodes.push_back(std::make_unique<Node>(dest));
+        //Node* srcNode = nodes.emplace_back(std::make_unique<Node>(src)).get();
+        //Node* destNode = nodes.emplace_back(std::make_unique<Node>(dest)).get();
+
+        // constructes an edge object and adds it to vector in on line
+        auto& fwdPtr = edges.emplace_back(std::make_unique<Edge>());
+        
+        Node* srcNode = nodes[src].get();
+        Node* destNode = nodes[dest].get();
+        
+        fwdPtr->src = srcNode;
+        fwdPtr->dest = destNode;
+        fwdPtr->weight = weight;
+
+        srcNode->setNeighbor(fwdPtr.get());
+    }
+
+    const Node* Graph::getNode(int id) const
+    {
+        return nodes[id].get();
+    }
+
+    const vector<std::unique_ptr<Node>>& Graph::getNodes() const
+    {
+        return nodes;
     }
 
     const std::vector<std::vector<int>>& Graph::getAdjList() const
@@ -41,7 +114,12 @@
         return this->weightedAdjList;
     }
 
-    const std::vector<Weighted>& Graph::getEdges() const
+    const std::vector<Weighted>& Graph::getwEdges() const
+    {
+        return wEdges;
+    }
+
+    const std::vector<std::unique_ptr<Edge>>& Graph::getEdges() const
     {
         return edges;
     }

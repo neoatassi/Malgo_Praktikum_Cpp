@@ -12,4 +12,4 @@
 std::vector<std::string> getGraphFiles(const std::string& directory);
 std::pair<int, int> parseFilename(const std::string& filepath);
 bool isValidGraphFilename(const std::string& filepath);
-Graph loadGraph(const std::string& filepath);
+std::unique_ptr<Graph> loadGraph(const std::string& filepath, const std::string& type);

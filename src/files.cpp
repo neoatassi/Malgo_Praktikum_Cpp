@@ -27,7 +27,7 @@ std::vector<std::string> getGraphFiles(const std::string& directory)
             files.push_back(entry.path().string());
         }
     }
-    std::sort(files.begin(), files.end());
+    //std::sort(files.begin(), files.end());
     return files;
 }
 
@@ -48,7 +48,7 @@ std::pair<int, int> parseFilename(const std::string& filepath)
     return {nodes, edges};
 }
 
-Graph loadGraph(const std::string& filepath)
+std::unique_ptr<Graph> loadGraph(const std::string& filepath, const std::string& type)
 {
     std::ifstream file(filepath);
     if (!file) {
@@ -59,13 +59,20 @@ Graph loadGraph(const std::string& filepath)
     file >> nodeCount;
     file.ignore();
  
-    if (filepath.find("MST") != std::string::npos) {
-        debugLog("MST FILENAME CONVENTION DETECTED");
-        nodeCount = parseFilename(filepath).first;
-        edgeCount = parseFilename(filepath).second;
-    }
+    // if (filepath.find("MST") != std::string::npos) {
+    //     debugLog("MST FILENAME CONVENTION DETECTED");
+    //     nodeCount = parseFilename(filepath).first;
+    //     edgeCount = parseFilename(filepath).second;
+    // }
     
-    Graph graph(nodeCount, edgeCount);
+    // Graph graph(nodeCount, edgeCount);
+
+    std::unique_ptr<Graph> graph;
+
+    if (type == "UndirectedGraph")   graph = std::make_unique<UndirectedGraph>(nodeCount);
+    else if (type == "DirectedGraph") graph = std::make_unique<DirectedGraph>(nodeCount);
+    //else if (type == "flow")     graph = std::make_unique<FlowGraph>(nodeCount);
+    else throw std::runtime_error("Unknown graph type: " + type);
 
     //std::cout << "Reading from file..  " << "\n";
     int v1, v2;
@@ -85,7 +92,7 @@ Graph loadGraph(const std::string& filepath)
         iss >> v1 >> v2;
         iss >> w;
 
-        graph.addEdge(v1, v2, w);
+        graph->addEdge(v1, v2, w);
     } while (std::getline(file, line));
  
     auto end = std::chrono::high_resolution_clock::now();
