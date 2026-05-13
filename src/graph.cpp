@@ -39,50 +39,43 @@
     
     void UndirectedGraph::addEdge(int src, int dest, double weight)
     {
-        // nodes.push_back(std::make_unique<Node>(src));
-        // nodes.push_back(std::make_unique<Node>(dest));
-        //Node* srcNode = nodes.emplace_back(std::make_unique<Node>(src)).get();
-        //Node* destNode = nodes.emplace_back(std::make_unique<Node>(dest)).get();
-
-        // constructes an edge object and adds it to vector in on line
-        
-        // std::cerr << "nodes size: " << nodes.size()
-        //       << " src: " << src
-        //       << " dest: " << dest << "\n";
 
         if (src >= (int)nodes.size() || dest >= (int)nodes.size()) {
             throw std::runtime_error("Node index out of bounds");
         }
 
-        
+        adjList[src].push_back(dest);
+        adjList[dest].push_back(src);
+
+        // register new (forward) edge from src to dest
         Edge* fwdPtr = edges.emplace_back(std::make_unique<Edge>()).get();
+        // register new (backward) edge from dest to src
         Edge* bwdPtr = edges.emplace_back(std::make_unique<Edge>()).get();
 
-
-        // Node* srcNode = nodes[src].get();
-        // Node* destNode = nodes[dest].get();
+        // alias for src and dest nodes
+        Node* srcNode = nodes[src].get();
+        Node* destNode = nodes[dest].get();
         
-        fwdPtr->src = nodes[src].get();
-        fwdPtr->dest = nodes[dest].get();
+        // set edge attributes
+        fwdPtr->src = srcNode;
+        fwdPtr->dest = destNode;
         fwdPtr->weight = weight;
 
-        bwdPtr->src = nodes[dest].get();
-        bwdPtr->dest = nodes[src].get();
+        bwdPtr->src = destNode;
+        bwdPtr->dest = srcNode;
         bwdPtr->weight = weight;
 
-        nodes[src]->setNeighbor(fwdPtr);
-        nodes[dest]->setNeighbor(bwdPtr);
+        // register the new edges in the neighbor lists for each node
+        srcNode->setNeighbor(fwdPtr);
+        destNode->setNeighbor(bwdPtr);
     }
 
     void DirectedGraph::addEdge(int src, int dest, double weight)
     {
-        // nodes.push_back(std::make_unique<Node>(src));
-        // nodes.push_back(std::make_unique<Node>(dest));
-        //Node* srcNode = nodes.emplace_back(std::make_unique<Node>(src)).get();
-        //Node* destNode = nodes.emplace_back(std::make_unique<Node>(dest)).get();
+        adjList[src].push_back(dest);
 
         // constructes an edge object and adds it to vector in on line
-        auto& fwdPtr = edges.emplace_back(std::make_unique<Edge>());
+        Edge* fwdPtr = edges.emplace_back(std::make_unique<Edge>()).get();
         
         Node* srcNode = nodes[src].get();
         Node* destNode = nodes[dest].get();
@@ -91,7 +84,7 @@
         fwdPtr->dest = destNode;
         fwdPtr->weight = weight;
 
-        srcNode->setNeighbor(fwdPtr.get());
+        srcNode->setNeighbor(fwdPtr);
     }
 
     const Node* Graph::getNode(int id) const

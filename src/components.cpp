@@ -3,10 +3,8 @@
 
 using std::vector;
 
-void DFS (const Graph& graph, int vertex, std::vector<char>& visited)
+    void DFS (const Graph& graph, int vertex, std::vector<char>& visited)
     {
-        //std::vector<bool> visited (this->count);
-        //visited[vertex] = true;    
         
         const vector<vector<int>>& adjList = graph.getAdjList();
 
@@ -15,7 +13,6 @@ void DFS (const Graph& graph, int vertex, std::vector<char>& visited)
 
         visited[vertex] = '1';
 
-        //std::cout << vertex << " ";
         while (!stack.empty()){
 
             vertex = stack.top();
@@ -30,8 +27,12 @@ void DFS (const Graph& graph, int vertex, std::vector<char>& visited)
             // }
 
             for (auto& neighbor : graph.getNode(vertex)->getNeighbors()){
-                if(visited[neighbor->dest->getID()] != '1'){
-                    stack.push(neighbor->dest->getID());
+                
+                int neighborID = neighbor->dest->getID();
+                
+                if(visited[neighborID] != '1'){
+                    stack.push(neighborID);
+                    visited[neighborID] = '1';
                 }
             }
         }
@@ -39,8 +40,6 @@ void DFS (const Graph& graph, int vertex, std::vector<char>& visited)
 
     void BFS(const Graph& graph, int vertex, std::vector<char>& visited)
     {
-
-        //std::vector<bool> visited (this->count);
 
         const vector<vector<int>>& adjList = graph.getAdjList();
 
@@ -62,6 +61,17 @@ void DFS (const Graph& graph, int vertex, std::vector<char>& visited)
                     visited[neighbor] = '1';
                 }
             }
+
+            // for (auto& neighbor : graph.getNode(vertex)->getNeighbors()){
+                
+            //     const int& neighborID = neighbor->dest->getID();
+                
+            //     if(visited[neighborID] != '1'){
+            //         queue.push(neighborID);
+            //         visited[neighborID] = '1';
+            //     }
+            // }
+
         }
     }
 

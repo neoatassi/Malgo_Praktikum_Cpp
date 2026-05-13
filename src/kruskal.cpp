@@ -30,6 +30,8 @@ struct UnionFind {
 
     bool unite(int u, int v)
     {
+        if (u == v) return false;
+        
         // union by rank — attach smaller tree under larger tree
         if (rank[u] < rank[v]) std::swap(u, v);
         parent[v] = u;
@@ -40,8 +42,6 @@ struct UnionFind {
 };
 
 double kruskal (const Graph& graph){
-
-    auto start = std::chrono::high_resolution_clock::now();
 
     double mst = 0;
     int addedEdges = 0;
@@ -65,8 +65,7 @@ double kruskal (const Graph& graph){
         int u = uf.find(edge->src->getID());
         int v = uf.find(edge->dest->getID());
 
-        if (u != v) {
-            uf.unite(u, v);
+        if (uf.unite(u, v)) {
             mst += edge->weight;
             addedEdges++;
 
@@ -76,11 +75,6 @@ double kruskal (const Graph& graph){
         }
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    double ms = std::chrono::duration<double, std::milli>(end - start).count();
-
-    debugLog("Processed MST in " + std::to_string(ms) + "ms");
-    // std::cout << "Processed MST in " << ms << "ms" << "\n"; 
 
     return mst;
 }

@@ -24,7 +24,8 @@
             "request": "launch",
             "name": "Debug DFS",
             "program": "${workspaceFolder}/bin/main",
-            "args": ["--algo", "dfs", "--dir", "Graph/Components"],
+            //"args": ["--algo", "dfs", "--dir", "Graph/Components"],
+            "args": ["--algo", "dfs", "--file", "Graph/Components/Graph1.txt"],
             "cwd": "${workspaceFolder}"
         },
         {
