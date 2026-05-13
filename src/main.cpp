@@ -15,6 +15,7 @@
 #include "../include/files.h"
 #include "../include/debug.h"
 #include "../include/tests.h"
+#include "../include/nearest_neighbor.h"
 
 void printUsage(const char* programName)
 {
@@ -63,6 +64,17 @@ void printUsage(const char* programName)
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         std::cout << "[PRIM] " << filename << " | MST weight: " << result
                   << " | time: " << ms << " ms\n";
+    } else if (algo == "nn" ) {
+        graph = loadGraph(filepath, "UndirectedGraph");
+        auto result = nearestNeighbor(*graph);
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        std::cout << "[NEAREST NEIGHBOR] " << filename << " | Optimal tour: " << result.second
+                  << " | time: " << ms << " ms\n";
+
+        for (auto& node : result.first){
+            std::cout << node->getID() << " -> ";
+        }
     } else {
         std::cerr << "Unknown algorithm: " << algo << "\n";
     }
