@@ -2,6 +2,8 @@
 #include <memory>
 #include <vector>
 
+using std::pair;
+
     Graph::Graph(int nodeCount)
     {
         this->nodeCount = nodeCount;
@@ -13,81 +15,28 @@
             nodes.emplace_back(std::make_unique<Node>(i));
     }
 
-    // Graph::Graph(int nodeCount, int edgeCount)
-    // {
-    //     this->nodeCount = nodeCount;
-    //     this->edgeCount = edgeCount;
-    //     adjList.resize(nodeCount);
-    //     weightedAdjList.resize(nodeCount);
-    //     wEdges.reserve(edgeCount);
-    //     //visited.resize(vertices);
-    // }
 
-    // void Graph::addEdge(int src, int dest, double weight)
-    // {
-    //     adjList[src].push_back(dest);
-    //     adjList[dest].push_back(src);
-        
-    //     if (edgeCount != 0) {
-    //         weightedAdjList[src].push_back({dest, weight});
-    //         weightedAdjList[dest].push_back({src, weight});
-
-    //         wEdges.push_back({src, dest, weight});
-    //     }
-    // }
-
-    
     void UndirectedGraph::addEdge(int src, int dest, double weight)
     {
+        // adjList[src].push_back(dest);
+        // adjList[dest].push_back(src);
 
-        if (src >= (int)nodes.size() || dest >= (int)nodes.size()) {
-            throw std::runtime_error("Node index out of bounds");
-        }
+        this->getNode(src)->addNeighbor(getNode(dest), weight);
+        this->getNode(dest)->addNeighbor(getNode(src), weight);
 
-        adjList[src].push_back(dest);
-        adjList[dest].push_back(src);
-
-        // register new (forward) edge from src to dest
-        Edge* fwdPtr = edges.emplace_back(std::make_unique<Edge>()).get();
-        // register new (backward) edge from dest to src
-        Edge* bwdPtr = edges.emplace_back(std::make_unique<Edge>()).get();
-
-        // alias for src and dest nodes
-        Node* srcNode = nodes[src].get();
-        Node* destNode = nodes[dest].get();
-        
-        // set edge attributes
-        fwdPtr->src = srcNode;
-        fwdPtr->dest = destNode;
-        fwdPtr->weight = weight;
-
-        bwdPtr->src = destNode;
-        bwdPtr->dest = srcNode;
-        bwdPtr->weight = weight;
-
-        // register the new edges in the neighbor lists for each node
-        srcNode->setNeighbor(fwdPtr);
-        destNode->setNeighbor(bwdPtr);
+        edges.push_back({src, dest, weight});
     }
 
     void DirectedGraph::addEdge(int src, int dest, double weight)
     {
         adjList[src].push_back(dest);
 
-        // constructes an edge object and adds it to vector in on line
-        Edge* fwdPtr = edges.emplace_back(std::make_unique<Edge>()).get();
-        
-        Node* srcNode = nodes[src].get();
-        Node* destNode = nodes[dest].get();
-        
-        fwdPtr->src = srcNode;
-        fwdPtr->dest = destNode;
-        fwdPtr->weight = weight;
+        this->getNode(src)->addNeighbor(getNode(dest), weight);
 
-        srcNode->setNeighbor(fwdPtr);
+        edges.push_back({src, dest, weight});
     }
 
-    const Node* Graph::getNode(int id) const
+    Node* Graph::getNode(int id) const
     {
         return nodes[id].get();
     }
@@ -102,24 +51,19 @@
         return this->adjList;
     }
 
-    const vector<vector<pair<int, double>>>& Graph::getWeightedAdjList() const
-    {
-        return this->weightedAdjList;
-    }
+    // const std::vector<std::unique_ptr<Edge>>& Graph::getEdges() const
+    // {
+    //     return edges;
+    // }
 
-    const std::vector<Weighted>& Graph::getwEdges() const
-    {
-        return wEdges;
-    }
-
-    const std::vector<std::unique_ptr<Edge>>& Graph::getEdges() const
+    const vector<Edge>& Graph::getEdges() const
     {
         return edges;
     }
 
     int Graph::getCount() const
     {
-        return this->nodeCount;
+        return getNodes().size();
     }
 
     void Graph::printGraph()
@@ -138,3 +82,20 @@
 
 
 
+
+
+Node::Node (int id) : id(id) {}
+
+const int& Node::getID() const{
+    return id;
+}
+
+void Node::addNeighbor(Node* node, double weight)
+{
+    neighbors.push_back({node, weight});
+}
+
+const vector<pair<Node*, double>>& Node::getNeighbors() const
+{
+    return neighbors;
+}

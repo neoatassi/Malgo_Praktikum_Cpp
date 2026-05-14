@@ -44,11 +44,17 @@ double prim(const Graph& graph)
         totalWeight += weight;
         edgesAdded++;
 
-        for (auto& neighbor : graph.getNode(vertex)->getNeighbors()){
-            if(!visited[neighbor->dest->getID()]){
-                minHeap.push({neighbor->weight, neighbor->dest->getID()});
+        for (auto& [neighbor, weight] : graph.getNode(vertex)->getNeighbors()){
+            if (!visited[neighbor->getID()]){
+                minHeap.push({weight, neighbor->getID()});
             }
         }
+
+        // for (auto& neighbor : graph.getNode(vertex)->getNeighbors()){
+        //     if(!visited[neighbor->dest->getID()]){
+        //         minHeap.push({neighbor->weight, neighbor->dest->getID()});
+        //     }
+        // }
 
         // for (auto& [neighbor, edgeWeight] : adjList[vertex]) {
         //     if (!visited[neighbor]) {

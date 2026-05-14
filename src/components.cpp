@@ -26,13 +26,20 @@ using std::vector;
             //     }
             // }
 
-            for (auto& neighbor : graph.getNode(vertex)->getNeighbors()){
+            // for (auto& neighbor : graph.getNode(vertex)->getNeighbors()){
                 
-                int neighborID = neighbor->dest->getID();
+            //     int neighborID = neighbor->dest->getID();
                 
-                if(visited[neighborID] != '1'){
-                    stack.push(neighborID);
-                    visited[neighborID] = '1';
+            //     if(visited[neighborID] != '1'){
+            //         stack.push(neighborID);
+            //         visited[neighborID] = '1';
+            //     }
+            // }
+
+            for (auto& [neighbor, weight] : graph.getNode(vertex)->getNeighbors()){
+                if (visited[neighbor->getID()] != '1'){
+                    stack.push(neighbor->getID());
+                    visited[neighbor->getID()] = '1';
                 }
             }
         }
@@ -54,13 +61,13 @@ using std::vector;
             vertex = queue.front();
             queue.pop();
  
-            for (int neighbor : adjList[vertex]) {
-                if (visited[neighbor] != '1') {
-                    //std::cout << "\n";
-                    queue.push(neighbor);
-                    visited[neighbor] = '1';
-                }
-            }
+            // for (int neighbor : adjList[vertex]) {
+            //     if (visited[neighbor] != '1') {
+            //         //std::cout << "\n";
+            //         queue.push(neighbor);
+            //         visited[neighbor] = '1';
+            //     }
+            // }
 
             // for (auto& neighbor : graph.getNode(vertex)->getNeighbors()){
                 
@@ -71,6 +78,13 @@ using std::vector;
             //         visited[neighborID] = '1';
             //     }
             // }
+
+            for (auto& [neighbor, weight] : graph.getNode(vertex)->getNeighbors()){
+                if (visited[neighbor->getID()] != '1'){
+                    queue.push(neighbor->getID());
+                    visited[neighbor->getID()] = '1';
+                }
+            }
 
         }
     }

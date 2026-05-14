@@ -46,32 +46,52 @@ double kruskal (const Graph& graph){
     double mst = 0;
     int addedEdges = 0;
 
-    vector<Edge*> sortedEdges;
+    vector<Edge> sortedEdges = graph.getEdges();
 
-    for (const auto& edgePtr : graph.getEdges()) {
-        sortedEdges.push_back(edgePtr.get());
-    }
+    // for (const auto& edgePtr : graph.getEdges()) {
+    //     sortedEdges.push_back(edgePtr.get());
+    // }
+
+    debugLog("sortedEdges size PRE sorting" + std::to_string(sortedEdges.size()) + "\n");
 
     std::sort(sortedEdges.begin(), sortedEdges.end(),
-        [](const Edge* e1, const Edge* e2) {
-        return e1->weight < e2->weight;
+        [](const Edge& e1, const Edge& e2) {
+        return e1.weight < e2.weight;
     });
+
+    debugLog("sortedEdges size POST sorting" + std::to_string(sortedEdges.size()) + "\n");
 
     // make a set for every node
     UnionFind uf(graph.getCount());
 
-    for (Edge* edge: sortedEdges){
+    // for (Edge* edge: sortedEdges){
 
-        int u = uf.find(edge->src->getID());
-        int v = uf.find(edge->dest->getID());
+    //     int u = uf.find(edge->src->getID());
+    //     int v = uf.find(edge->dest->getID());
 
-        if (uf.unite(u, v)) {
-            mst += edge->weight;
+    //     if (uf.unite(u, v)) {
+    //         mst += edge->weight;
+    //         addedEdges++;
+
+    //         // stops after reaching e = n - 1, otherwise creates cycles
+    //         if (addedEdges == graph.getCount() - 1)
+    //             break;
+    //     }
+    // }
+
+    for (const Edge& edge : sortedEdges){
+
+        int u = uf.find(edge.src);
+        int v = uf.find(edge.dest);
+
+        if (uf.unite(u, v)){
+            mst += edge.weight;
             addedEdges++;
 
-            // stops after reaching e = n - 1, otherwise creates cycles
-            if (addedEdges == graph.getCount() - 1)
+            if (addedEdges == graph.getCount() - 1){
+                debugLog("Stopped at: " + std::to_string(addedEdges) + " edges, nodeCount: " + std::to_string(graph.getCount()) + "\n");
                 break;
+            }
         }
     }
 

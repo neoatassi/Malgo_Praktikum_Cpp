@@ -41,7 +41,7 @@
             "request": "launch",
             "name": "Debug Single File",
             "program": "${workspaceFolder}/bin/main",
-            "args": ["--algo", "kruskal", "--file", "Graph/MST/G_1_2.txt"],
+            "args": ["--algo", "kruskal", "--file", "Graph/MST/G_7.txt"],
             "cwd": "${workspaceFolder}"
         }
     ],
