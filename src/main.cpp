@@ -64,17 +64,24 @@ void printUsage(const char* programName)
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         std::cout << "[PRIM] " << filename << " | MST weight: " << result
                   << " | time: " << ms << " ms\n";
-    // } else if (algo == "nn" ) {
-    //     graph = loadGraph(filepath, "UndirectedGraph");
-    //     auto result = nearestNeighbor(*graph);
-    //     auto end = std::chrono::high_resolution_clock::now();
-    //     double ms = std::chrono::duration<double, std::milli>(end - start).count();
-    //     std::cout << "[NEAREST NEIGHBOR] " << filename << " | Optimal tour: " << result.second
-    //               << " | time: " << ms << " ms\n";
+    } else if (algo == "nn" ) {
+        graph = loadGraph(filepath, "UndirectedGraph");
+        // TourResult result = nearestNeighbor(*graph, 0);
+        TourResult result = bestTour(*graph);
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        std::cout << "[NEAREST NEIGHBOR] " << filename << " | Optimal tour: " << result.totalDistance
+                  << " | time: " << ms << " ms\n";
 
-    //     for (auto& node : result.first){
-    //         std::cout << node->getID() << " -> ";
-    //     }
+
+        std::for_each(result.tour.begin(), result.tour.end() - 1, [](Node* node) {
+            std::cout << node->getID() << " -> ";
+        });
+        std::cout << result.tour.back()->getID() << "\n";
+
+        // for (auto& node : result.tour){
+        //     std::cout << node->getID() << " -> ";
+        // }
     } else {
         std::cerr << "Unknown algorithm: " << algo << "\n";
     }

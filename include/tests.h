@@ -3,6 +3,7 @@
 #include "../include/kruskal.h"
 #include "../include/prim.h"
 #include "../include/components.h"
+#include "../include/nearest_neighbor.h"
 
 double roundTo(double value, int decimals);
 static void runComponentTests(const std::string& directory, void (*traverseFn)(const Graph&, int, std::vector<char>&));
