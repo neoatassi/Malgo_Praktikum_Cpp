@@ -1,3 +1,5 @@
+#pragma once
+
 #include "graph.h"
 #include "kruskal.h"
 #include "prim.h"
@@ -21,3 +23,4 @@ struct TourResult {
 
 TourResult nearestNeighbor(const Graph& graph, int start);
 TourResult bestTour (const Graph& graph);
+TourResult doubleTree (const Graph& graph);

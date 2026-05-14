@@ -99,3 +99,12 @@ const vector<pair<Node*, double>>& Node::getNeighbors() const
 {
     return neighbors;
 }
+
+const pair<Node*, double>& Node::getNextNeighbor() const
+{
+    return neighbors.back();
+}
+
+void Node::popNeighbor(){
+    neighbors.pop_back();        
+}

@@ -35,6 +35,8 @@ class Node {
     // void setNeighbor(Edge* edge);
     // const vector<Edge*>& getNeighbors() const;
     const vector<pair<Node*, double>>& getNeighbors() const;
+    const pair<Node*, double>& getNextNeighbor() const;
+    void popNeighbor();
 
 };
 

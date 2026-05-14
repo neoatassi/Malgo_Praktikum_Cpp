@@ -113,7 +113,7 @@ bool approximatelyEqual(double a, double b, double epsilon = 1e-6)
     return std::abs(a - b) < epsilon;
 }
 
-void runMSTTests(const std::string& directory, double (*mstFn)(const Graph&), const std::string& algoName)
+void runMSTTests(const std::string& directory, MSTResult (*mstFn)(const Graph&), const std::string& algoName)
 {
     std::cout << "\n--- Running tests for: " << algoName << " ---\n\n";
 
@@ -142,7 +142,9 @@ void runMSTTests(const std::string& directory, double (*mstFn)(const Graph&), co
             std::unique_ptr<Graph> graph = loadGraph(filepath, "UndirectedGraph");
 
             auto start = std::chrono::high_resolution_clock::now();
-            double result = mstFn(*graph);
+            
+            //double result = mstFn(*graph);
+            MSTResult result = mstFn(*graph);
             auto end = std::chrono::high_resolution_clock::now();
             double ms = std::chrono::duration<double, std::milli>(end - start).count();
 
@@ -150,13 +152,13 @@ void runMSTTests(const std::string& directory, double (*mstFn)(const Graph&), co
             // double roundedExpected = roundTo(expected.mstWeight, 5);
             
             // check result
-            if (approximatelyEqual(result, expected.mstWeight)) {
-                std::cout << "[PASS] " << filename << "\t| weight: " << result << "\t";
+            if (approximatelyEqual(result.weight, expected.mstWeight)) {
+                std::cout << "[PASS] " << filename << "\t| weight: " << result.weight << "\t";
                 passed++;
             } else {
                 std::cout << "[FAIL] " << filename
                           << "\t| expected weight: " << expected.mstWeight
-                          << ", got: " << result << "\n";
+                          << ", got: " << result.weight << "\n";
                 failed++;
             }
 

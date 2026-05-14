@@ -1,3 +1,4 @@
 #include "graph.h"
+#include "kruskal.h"
 
-double prim(const Graph& graph);
+MSTResult prim(const Graph& graph);

@@ -4,11 +4,13 @@
 
 using std::vector, std::pair, std::priority_queue, std::greater;
 
-double prim(const Graph& graph)
+MSTResult prim(const Graph& graph)
 {
     int n = graph.getCount();
     //const vector<vector<pair<int, double>>>& adjList = graph.getWeightedAdjList();
     auto& adjList = graph.getEdges();
+
+    MSTResult mst(graph.getCount() - 1);
 
     // min-heap
     using Edge = std::pair<double, int>;
@@ -42,6 +44,8 @@ double prim(const Graph& graph)
 
         visited[vertex] = true;
         totalWeight += weight;
+        mst.weight += weight;
+        //mst.edges.push_back()
         edgesAdded++;
 
         for (auto& [neighbor, weight] : graph.getNode(vertex)->getNeighbors()){
@@ -63,7 +67,7 @@ double prim(const Graph& graph)
         // }
     }
 
-    return totalWeight;
+    return mst;
 }
 
 // double prim(const Graph& graph)

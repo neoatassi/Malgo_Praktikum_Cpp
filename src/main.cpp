@@ -15,7 +15,7 @@
 #include "../include/files.h"
 #include "../include/debug.h"
 #include "../include/tests.h"
-#include "../include/nearest_neighbor.h"
+#include "../include/tsp.h"
 
 void printUsage(const char* programName)
 {
@@ -51,18 +51,19 @@ void printUsage(const char* programName)
 
     } else if (algo == "kruskal") {
         graph = loadGraph(filepath, "UndirectedGraph");
-        double result = kruskal(*graph);
+        //double result = kruskal(*graph);
+        MSTResult result = kruskal(*graph);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
-        std::cout << "[Kruskal] " << filename << " | MST weight: " << result
+        std::cout << "[Kruskal] " << filename << " | MST weight: " << result.weight
                   << " | time: " << ms << " ms\n";
 
     } else if (algo == "prim") {
         graph = loadGraph(filepath, "UndirectedGraph");
-        double result = prim(*graph);
+        MSTResult result = prim(*graph);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
-        std::cout << "[PRIM] " << filename << " | MST weight: " << result
+        std::cout << "[PRIM] " << filename << " | MST weight: " << result.weight
                   << " | time: " << ms << " ms\n";
     } else if (algo == "nn" ) {
         graph = loadGraph(filepath, "UndirectedGraph");
@@ -78,6 +79,24 @@ void printUsage(const char* programName)
             std::cout << node->getID() << " -> ";
         });
         std::cout << result.tour.back()->getID() << "\n";
+
+        // for (auto& node : result.tour){
+        //     std::cout << node->getID() << " -> ";
+        // }
+    } else if (algo == "dt" ) {
+        graph = loadGraph(filepath, "UndirectedGraph");
+        // TourResult result = nearestNeighbor(*graph, 0);
+        TourResult result = doubleTree(*graph);
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        std::cout << "[Double Tree] " << filename << " | Optimal tour: " << result.totalDistance
+                  << " | time: " << ms << " ms\n";
+
+
+        std::for_each(result.tour.begin(), result.tour.end() - 1, [](Node* node) {
+            std::cout << node->getID() << " -> ";
+        });
+        std::cout << result.tour.back()->getID() << "\n\n";
 
         // for (auto& node : result.tour){
         //     std::cout << node->getID() << " -> ";

@@ -3,5 +3,13 @@
 
 #pragma once
 
+struct MSTResult {
+    std::vector<Edge> edges;
+    double weight = 0.0;
 
-double kruskal (const Graph& graph); 
+    MSTResult (int edgeCount){
+        edges.reserve(edgeCount);
+    }
+};
+
+MSTResult kruskal (const Graph& graph); 

@@ -41,10 +41,12 @@ struct UnionFind {
     }
 };
 
-double kruskal (const Graph& graph){
+MSTResult kruskal (const Graph& graph){
 
-    double mst = 0;
+    double totalWeight = 0;
     int addedEdges = 0;
+
+    MSTResult mst(graph.getCount() - 1);
 
     vector<Edge> sortedEdges = graph.getEdges();
 
@@ -85,7 +87,8 @@ double kruskal (const Graph& graph){
         int v = uf.find(edge.dest);
 
         if (uf.unite(u, v)){
-            mst += edge.weight;
+            mst.weight += edge.weight;
+            mst.edges.push_back(edge);
             addedEdges++;
 
             if (addedEdges == graph.getCount() - 1){
