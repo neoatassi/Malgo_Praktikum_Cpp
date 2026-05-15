@@ -19,7 +19,7 @@ TourResult nearestNeighbor(const Graph& graph, int start)
     auto currentNode = startingNode;
 
     // n nodes + return to start
-    TourResult result(nodeCount);
+    TourResult result(nodeCount + 1);
 
     result.addNode(currentNode);
 
@@ -50,42 +50,6 @@ TourResult nearestNeighbor(const Graph& graph, int start)
         }
     }
 
-    // bool done = false;
-    // double minWeight = -1;
-    // double totalWeight = 0;
-
-    // Node* closest;
-    
-
-    // for (auto& node : graph.getNodes()){
-    //     if (done) break;
-
-    //     visited[node->getID()] = '1';
-
-    //     for (auto& neighbor : node->getNeighbors()){
-    //         if (visited[neighbor->dest->getID()] == '1') continue;
-            
-    //         if (minWeight == -1 || minWeight > neighbor->weight){
-    //             minWeight = neighbor->weight;
-    //             closest = neighbor->dest;
-    //         }
-            
-    //         //visited[neighbor->dest->getID()] = '1';
-    //     }
-
-    //     totalWeight += minWeight;
-    //     tour.push_back(closest);
-    //     minWeight = -1;
-    // }
-
-    // for (auto& neighbor : closest->getNeighbors()){
-    //     if (neighbor->dest == startingNode)
-    //         totalWeight += neighbor->weight;
-    // }
-
-    //tour.push_back(startingNode);
-    // return {tour, totalWeight};
-
     result.addNode(startingNode);
     return result;
     //return {result.tour, result.totalDistance};
@@ -112,29 +76,27 @@ vector<Node*> findEulerianCircuit(const Graph& graph) {
     stack<Node*> currPath;
     vector<Node*> circuit;
     
-    // Start from vertex 0 (or any vertex with non-zero degree)
-    // Ensure the graph is valid (all vertices have even degree in undirected, 
-    // or equal in/out degree in directed) before calling this.
+    // Start from node 0
     Node* startNode = graph.getNode(0);
     currPath.push(startNode);
     
     while (!currPath.empty()) {
         auto node = currPath.top();
         
-        // If there are remaining edges from u
+        // If there are remaining neighboring edges
         if (!node->getNeighbors().empty()) {
-            // Get the next vertex
+            // Get the next node and remove it from the neighbor's list
             auto nextNode = node->getNextNeighbor();
-            node->popNeighbor(); // Remove the edge (u, v)
-            currPath.push(nextNode.first);  // Move to v
+            node->popNeighbor();
+            currPath.push(nextNode.first);  // Move to the next node
         } else {
-            // Backtrack: no more edges from u
+            // Backtrack
             circuit.push_back(node);
             currPath.pop();
         }
     }
     
-    // The circuit is constructed in reverse order
+    // circuit is constructed in reverse order
     reverse(circuit.begin(), circuit.end());
     return circuit;
 }
@@ -167,15 +129,15 @@ TourResult doubleTree (const Graph& graph){
     // 3: find eulerian cicruit
     auto circuit = findEulerianCircuit(euGraph);
 
-    // for (auto element : circuit){
-    //     std::cout << element->getID() << "\t->\t" << edge.dest << "\t" << edge.weight << "\n";
-    // }
-
-    // // Print out euclerian circuit
-    // std::for_each(circuit.begin(), circuit.end() - 1, [](Node* node) {
+    // Print out euclerian circuit
+    // if (CIRCUIT_PRINT) {
+    //     std::cout << "Euler Circuit:" << "\t";
+    //     std::for_each(circuit.begin(), circuit.end() - 1, [](Node* node) {
     //         std::cout << node->getID() << " -> ";
     //     });
-    // std::cout << circuit.back()->getID() << "\n";
+    //     std::cout << circuit.back()->getID() << "\n";
+    // }
+    
 
     // 4: shorten the circuit
     vector<char> visited(nodeCount, '0');

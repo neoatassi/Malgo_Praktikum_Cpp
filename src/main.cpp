@@ -68,17 +68,23 @@ void printUsage(const char* programName)
     } else if (algo == "nn" ) {
         graph = loadGraph(filepath, "UndirectedGraph");
         // TourResult result = nearestNeighbor(*graph, 0);
-        TourResult result = bestTour(*graph);
+        TourResult result(graph->getCount() + 1);
+        if (BEST_NN) result = bestTour(*graph);
+        else result = nearestNeighbor(*graph, 0);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
-        std::cout << "[NEAREST NEIGHBOR] " << filename << " | Optimal tour: " << result.totalDistance
-                  << " | time: " << ms << " ms\n";
+        std::cout << "[NEAREST NEIGHBOR] " << filename 
+                  << "\t| time: " << ms << " ms"
+                  << "\t| Optimal tour: " << result.totalDistance
+                  << "\n";
 
-
-        std::for_each(result.tour.begin(), result.tour.end() - 1, [](Node* node) {
+        if (CIRCUIT_PRINT) {
+            std::cout << "Optimized Circuit: " << "\n";
+            std::for_each(result.tour.begin(), result.tour.end() - 1, [](Node* node) {
             std::cout << node->getID() << " -> ";
         });
         std::cout << result.tour.back()->getID() << "\n";
+        }
 
         // for (auto& node : result.tour){
         //     std::cout << node->getID() << " -> ";
@@ -89,14 +95,19 @@ void printUsage(const char* programName)
         TourResult result = doubleTree(*graph);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
-        std::cout << "[Double Tree] " << filename << " | Optimal tour: " << result.totalDistance
-                  << " | time: " << ms << " ms\n";
+        std::cout << "[Double Tree] " << filename 
+                  << "\t| time: " << ms << " ms"
+                  << "\t| Optimal tour: " << result.totalDistance
+                  << "\n";
 
-
-        std::for_each(result.tour.begin(), result.tour.end() - 1, [](Node* node) {
+        if (CIRCUIT_PRINT){
+            std::cout << "Optimized Circuit: " << "\n";
+            std::for_each(result.tour.begin(), result.tour.end() - 1, [](Node* node) {
             std::cout << node->getID() << " -> ";
         });
-        std::cout << result.tour.back()->getID() << "\n\n";
+            std::cout << result.tour.back()->getID() << "\n\n";
+        }
+        
 
         // for (auto& node : result.tour){
         //     std::cout << node->getID() << " -> ";
@@ -137,6 +148,10 @@ int main(int argc, char* argv[])
             testMode = true;
         } else if (arg == "--debug") {
             DEBUG_MODE = true;
+        } else if (arg == "--no-circuit") {
+            CIRCUIT_PRINT = false;
+        } else if (arg == "--best-nn") {
+            BEST_NN = true;
         } else {
             std::cerr << "Unknown argument: " << arg << "\n";
             printUsage(argv[0]);
