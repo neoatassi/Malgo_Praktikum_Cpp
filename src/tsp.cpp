@@ -55,7 +55,7 @@ TourResult nearestNeighbor(const Graph& graph, int start)
     //return {result.tour, result.totalDistance};
 }
 
-TourResult bestTour (const Graph& graph)
+TourResult nearestNeighborBest (const Graph& graph)
 {
     int nodeCount = graph.getCount();
 
@@ -166,4 +166,103 @@ TourResult doubleTree (const Graph& graph){
     }
 
     return result;
+}
+
+// ======================== Vollständige Suche + Branch and Bound =================================
+
+
+double lowerBound(SearchState& state, int current)
+{
+    double bound = 0.0;
+    int n = state.graph.getCount();
+
+    for (int i = 0; i < n; ++i) {
+        if (state.visited[i] == '0') {
+            bound += state.graph.getNode(i)->getCheapestEdgeWeight();
+        }
+    }
+
+    // direct O(1) lookup instead of scanning neighbors
+    bound += state.graph.getEdgeWeight(current, 0);
+
+    return bound;
+}
+
+void searchRecursive(SearchState& state, int current, bool useBounds)
+{
+    int n = state.graph.getCount();
+
+    // all nodes visited — close the tour
+    if ((int)state.currentTour.size() == n) {
+        double returnWeight = state.graph.getEdgeWeight(current, 0);
+        double totalDistance = state.currentDistance + returnWeight;
+
+        if (totalDistance < state.best.totalDistance) {
+            state.best.totalDistance = totalDistance;
+            state.best.tour.clear();
+            for (int id : state.currentTour) {
+                state.best.tour.push_back(state.graph.getNode(id));
+            }
+            state.best.tour.push_back(state.graph.getNode(0));
+            debugLog("New best: " + std::to_string(totalDistance));
+        }
+        return;
+    }
+
+    for (auto& [neighbor, weight] : state.graph.getNode(current)->getNeighbors()) {
+        int nextId = neighbor->getID();
+
+        if (state.visited[nextId] == '1') continue;
+
+        double newDistance = state.currentDistance + weight;
+
+        if (useBounds) {
+            // mark as visited before computing bound so it's excluded
+            state.visited[nextId] = '1';
+            double bound = newDistance + lowerBound(state, nextId);
+            state.visited[nextId] = '0';
+
+            if (bound >= state.best.totalDistance) continue; // prune
+        } else {
+            if (newDistance >= state.best.totalDistance) continue;
+        }
+
+        // recurse
+        state.visited[nextId] = '1';
+        state.currentTour.push_back(nextId);
+        state.currentDistance = newDistance;
+
+        searchRecursive(state, nextId, useBounds);
+
+        // backtrack
+        state.visited[nextId] = '0';
+        state.currentTour.pop_back();
+        state.currentDistance -= weight;
+    }
+}
+
+TourResult completeSearch(const Graph& graph)
+{
+    TourResult initial = nearestNeighborBest(graph);
+    SearchState state(graph, initial);
+
+    state.visited[0] = '1';
+    state.currentTour.push_back(0);
+
+    searchRecursive(state, 0, false);
+
+    return state.best;
+}
+
+TourResult branchAndBound(const Graph& graph)
+{
+    TourResult initial = nearestNeighborBest(graph);
+    SearchState state(graph, initial);
+
+    state.visited[0] = '1';
+    state.currentTour.push_back(0);
+
+    searchRecursive(state, 0, true);
+
+    return state.best;
 }

@@ -9,7 +9,7 @@ using std::pair;
         this->nodeCount = nodeCount;
         adjList.resize(nodeCount);
         //weightedAdjList.resize(nodeCount);
-
+        
         nodes.reserve(nodeCount);
         for (int i = 0; i < nodeCount; ++i)
             nodes.emplace_back(std::make_unique<Node>(i));
@@ -61,6 +61,14 @@ using std::pair;
         return edges;
     }
 
+    double Graph::getEdgeWeight(int from, int to) const
+    {
+        for (auto& [neighbor, weight] : nodes[from]->getNeighbors()) {
+            if (neighbor->getID() == to) return weight;
+        }
+        throw std::runtime_error("Edge not found: " + std::to_string(from) + " -> " + std::to_string(to));
+    }
+
     int Graph::getCount() const
     {
         return getNodes().size();
@@ -93,6 +101,9 @@ const int& Node::getID() const{
 void Node::addNeighbor(Node* node, double weight)
 {
     neighbors.push_back({node, weight});
+    if (weight < cheapestEdgeWeight) {
+        cheapestEdgeWeight = weight;
+    }
 }
 
 const vector<pair<Node*, double>>& Node::getNeighbors() const
@@ -107,4 +118,9 @@ const pair<Node*, double>& Node::getNextNeighbor() const
 
 void Node::popNeighbor(){
     neighbors.pop_back();        
+}
+
+double Node::getCheapestEdgeWeight() const
+{
+    return cheapestEdgeWeight;
 }

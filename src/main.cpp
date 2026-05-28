@@ -69,7 +69,7 @@ void printUsage(const char* programName)
         graph = loadGraph(filepath, "UndirectedGraph");
         // TourResult result = nearestNeighbor(*graph, 0);
         TourResult result(graph->getCount() + 1);
-        if (BEST_NN) result = bestTour(*graph);
+        if (BEST_NN) result = nearestNeighborBest(*graph);
         else result = nearestNeighbor(*graph, 0);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
@@ -112,6 +112,46 @@ void printUsage(const char* programName)
         // for (auto& node : result.tour){
         //     std::cout << node->getID() << " -> ";
         // }
+    } else if (algo == "all" ) {
+        graph = loadGraph(filepath, "UndirectedGraph");
+        // TourResult result = nearestNeighbor(*graph, 0);
+        TourResult result(graph->getCount() + 1);
+        result = completeSearch(*graph);
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        std::cout << "[COMPLETE SEARCH] " << filename 
+                  << "\t| time: " << ms << " ms"
+                  << "\t| Optimal tour: " << result.totalDistance
+                  << "\n";
+
+        if (CIRCUIT_PRINT) {
+            std::cout << "Optimized Circuit: " << "\n";
+            std::for_each(result.tour.begin(), result.tour.end() - 1, [](Node* node) {
+            std::cout << node->getID() << " -> ";
+        });
+        std::cout << result.tour.back()->getID() << "\n";
+        } 
+
+    } else if (algo == "bb" ) {
+        graph = loadGraph(filepath, "UndirectedGraph");
+        // TourResult result = nearestNeighbor(*graph, 0);
+        TourResult result(graph->getCount() + 1);
+        result = branchAndBound(*graph);
+        auto end = std::chrono::high_resolution_clock::now();
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        std::cout << "[COMPLETE SEARCH] " << filename 
+                  << "\t| time: " << ms << " ms"
+                  << "\t| Optimal tour: " << result.totalDistance
+                  << "\n";
+
+        if (CIRCUIT_PRINT) {
+            std::cout << "Optimized Circuit: " << "\n";
+            std::for_each(result.tour.begin(), result.tour.end() - 1, [](Node* node) {
+            std::cout << node->getID() << " -> ";
+        });
+        std::cout << result.tour.back()->getID() << "\n";
+        } 
+
     } else {
         std::cerr << "Unknown algorithm: " << algo << "\n";
     }

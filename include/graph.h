@@ -26,6 +26,7 @@ class Node {
     private:
     int id;
     vector<pair<Node*,double>> neighbors;
+    double cheapestEdgeWeight = std::numeric_limits<double>::infinity();
     
     public:
     Node (int id);
@@ -37,6 +38,9 @@ class Node {
     const vector<pair<Node*, double>>& getNeighbors() const;
     const pair<Node*, double>& getNextNeighbor() const;
     void popNeighbor();
+
+    // Useful for calculating lower bound
+    double getCheapestEdgeWeight() const;
 
 };
 
@@ -53,8 +57,6 @@ class Graph {
     vector<vector<int>> adjList;
     vector<std::unique_ptr<Node>> nodes;
     vector<Edge> edges;
-    
-    
     //vector<vector<pair<int, double>>> weightedAdjList;
     //vector<Weighted> wEdges;
     //vector<std::unique_ptr<Edge>> edges;
@@ -67,6 +69,7 @@ class Graph {
 
     const vector<vector<int>>& getAdjList() const;
     const vector<Edge>& getEdges() const;
+    double getEdgeWeight(int from, int to) const;
     Node* getNode(int id) const;
     const vector<std::unique_ptr<Node>>& getNodes() const;
     
