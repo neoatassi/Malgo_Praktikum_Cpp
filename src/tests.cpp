@@ -198,6 +198,8 @@ void runTests(const std::string& directory, const std::string& algo)
         runMSTTests(directory, &kruskal, "Kruskal");
     } else if (algo == "prim") {
         runMSTTests(directory, &prim, "Prim");
+    } else if (algo == "bb" || algo == "all") {
+        runTSPTests(directory);
     } else {
         std::cout << "\n--- No algorithm specified - Running on all" << " ---\n\n";
         runComponentTests("./Graph/Components", &DFS);

@@ -119,6 +119,9 @@ void printUsage(const char* programName)
         result = completeSearch(*graph);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        
+        if (result.totalDistance == 0) return;
+        
         std::cout << "[COMPLETE SEARCH] " << filename 
                   << "\t| time: " << ms << " ms"
                   << "\t| Optimal tour: " << result.totalDistance
@@ -139,7 +142,10 @@ void printUsage(const char* programName)
         result = branchAndBound(*graph);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
-        std::cout << "[COMPLETE SEARCH] " << filename 
+        
+        if (result.totalDistance == 0) return;
+        
+        std::cout << "[BRANCH & BOUND] " << filename 
                   << "\t| time: " << ms << " ms"
                   << "\t| Optimal tour: " << result.totalDistance
                   << "\n";

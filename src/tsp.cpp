@@ -170,7 +170,7 @@ TourResult doubleTree (const Graph& graph){
 
 // ======================== Vollständige Suche + Branch and Bound =================================
 
-
+// helper function to find the lower bound
 double lowerBound(SearchState& state, int current)
 {
     double bound = 0.0;
@@ -182,8 +182,16 @@ double lowerBound(SearchState& state, int current)
         }
     }
 
-    // direct O(1) lookup instead of scanning neighbors
-    bound += state.graph.getEdgeWeight(current, 0);
+    double minFromCurrent = std::numeric_limits<double>::infinity();
+    for (auto& [neighbor, weight] : state.graph.getNode(current)->getNeighbors()) {
+        if (state.visited[neighbor->getID()] == '0' && weight < minFromCurrent) {
+            minFromCurrent = weight;
+        }
+    }
+
+    if (minFromCurrent != std::numeric_limits<double>::infinity()) {
+        bound += minFromCurrent;
+    }
 
     return bound;
 }
@@ -243,7 +251,10 @@ void searchRecursive(SearchState& state, int current, bool useBounds)
 
 TourResult completeSearch(const Graph& graph)
 {
-    TourResult initial = nearestNeighborBest(graph);
+    // Guarding clause to not compute large graphs
+    if (graph.getCount() > 12) return TourResult(graph.getCount());
+    // TourResult initial = nearestNeighborBest(graph);
+    TourResult initial = nearestNeighbor(graph, 0);
     SearchState state(graph, initial);
 
     state.visited[0] = '1';
@@ -256,7 +267,11 @@ TourResult completeSearch(const Graph& graph)
 
 TourResult branchAndBound(const Graph& graph)
 {
-    TourResult initial = nearestNeighborBest(graph);
+    // Guarding clause to not compute large graphs
+    if (graph.getCount() > 12) return TourResult(graph.getCount());
+
+    // TourResult initial = nearestNeighborBest(graph);
+    TourResult initial = nearestNeighbor(graph, 0);
     SearchState state(graph, initial);
 
     state.visited[0] = '1';
