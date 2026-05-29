@@ -6,6 +6,21 @@
 
 using std::vector, std::stack;
 
+void rotateTourToStart(TourResult& result, int startId)
+{
+    // find node 0 in the tour (excluding the closing node)
+    auto it = std::find_if(result.tour.begin(), result.tour.end() - 1,
+        [startId](Node* n) { return n->getID() == startId; });
+
+    if (it == result.tour.end() - 1) return;
+
+    // rotate so node 0 is first
+    std::rotate(result.tour.begin(), it, result.tour.end() - 1);
+
+    // re-close the tour
+    result.tour.back() = result.tour.front();
+}
+
 TourResult nearestNeighbor(const Graph& graph, int start)
 {
     int nodeCount = graph.getCount();
@@ -68,6 +83,8 @@ TourResult nearestNeighborBest (const Graph& graph)
             best = candidate;
 
     }
+
+    rotateTourToStart(best, 0);
 
     return best;
 }
@@ -168,7 +185,7 @@ TourResult doubleTree (const Graph& graph){
     return result;
 }
 
-// ======================== Vollständige Suche + Branch and Bound =================================
+// ======================== Complete Search + Branch and Bound =================================
 
 // helper function to find the lower bound
 double lowerBound(SearchState& state, int current)
@@ -176,12 +193,15 @@ double lowerBound(SearchState& state, int current)
     double bound = 0.0;
     int n = state.graph.getCount();
 
+    // calculate minimum cost of traversing remaining unvisited nodes
+    // by getting the cheapest edge connected to each node and summing them
     for (int i = 0; i < n; ++i) {
         if (state.visited[i] == '0') {
             bound += state.graph.getNode(i)->getCheapestEdgeWeight();
         }
     }
 
+    // calculate the cheapest way out of this node
     double minFromCurrent = std::numeric_limits<double>::infinity();
     for (auto& [neighbor, weight] : state.graph.getNode(current)->getNeighbors()) {
         if (state.visited[neighbor->getID()] == '0' && weight < minFromCurrent) {
@@ -224,6 +244,7 @@ void searchRecursive(SearchState& state, int current, bool useBounds)
 
         double newDistance = state.currentDistance + weight;
 
+        // use lower bound to prune if needed
         if (useBounds) {
             // mark as visited before computing bound so it's excluded
             state.visited[nextId] = '1';
@@ -249,12 +270,13 @@ void searchRecursive(SearchState& state, int current, bool useBounds)
     }
 }
 
-TourResult completeSearch(const Graph& graph)
+TourResult completeSearch(const Graph& graph, int maxNodes)
 {
     // Guarding clause to not compute large graphs
-    if (graph.getCount() > 12) return TourResult(graph.getCount());
-    // TourResult initial = nearestNeighborBest(graph);
-    TourResult initial = nearestNeighbor(graph, 0);
+    if (graph.getCount() > maxNodes) return TourResult(graph.getCount());
+
+    TourResult initial = nearestNeighborBest(graph);
+    // TourResult initial = nearestNeighbor(graph, 0);
     SearchState state(graph, initial);
 
     state.visited[0] = '1';
@@ -265,13 +287,13 @@ TourResult completeSearch(const Graph& graph)
     return state.best;
 }
 
-TourResult branchAndBound(const Graph& graph)
+TourResult branchAndBound(const Graph& graph, int maxNodes)
 {
     // Guarding clause to not compute large graphs
-    if (graph.getCount() > 12) return TourResult(graph.getCount());
+    if (graph.getCount() > maxNodes) return TourResult(graph.getCount());
 
-    // TourResult initial = nearestNeighborBest(graph);
-    TourResult initial = nearestNeighbor(graph, 0);
+    TourResult initial = nearestNeighborBest(graph);
+    // TourResult initial = nearestNeighbor(graph, 0);
     SearchState state(graph, initial);
 
     state.visited[0] = '1';

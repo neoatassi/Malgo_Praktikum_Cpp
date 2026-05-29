@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <sstream>
 
 namespace fs = std::filesystem;
 
@@ -21,6 +22,13 @@ namespace {
 // Counters for the final summary
 int g_passed = 0;
 int g_failed = 0;
+
+// Helper to prevent trailing zeroes when outputting to_string(double)
+std::string roundDoubleToString(double value, int precision) {
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(precision) << value;
+    return stream.str();
+}
 
 // Compares two doubles up to the precision the professor reports (2 decimals)
 bool approxEqual(double a, double b, double epsilon = 0.01)
@@ -50,21 +58,20 @@ const std::map<std::string, double> KNOWN_OPTIMA = {
 };
 
 // ---------------------------------------------------------------------------
-// Structural validation of a tour, independent of any algorithm.
-// A correct TSP tour on n nodes must:
-//   1. contain exactly n + 1 entries (start node repeated at the end)
-//   2. start and end on the same node
-//   3. visit every node exactly once
-//   4. have a totalDistance equal to the sum of its edges in the graph
+// Structural validation check of the tour independent of algorithm.
 // ---------------------------------------------------------------------------
 
 bool tourIsStructurallyValid(const TourResult& result, const Graph& graph)
 {
     int n = graph.getCount();
 
+    // Must contain exactly n + 1 entries (start node repeated at the end)
     if ((int)result.tour.size() != n + 1) return false;
+
+    // Must start and end on the same node
     if (result.tour.front()->getID() != result.tour.back()->getID()) return false;
 
+    // must visit every node exactly once
     std::vector<bool> seen(n, false);
     for (int i = 0; i < n; ++i) {
         int id = result.tour[i]->getID();
@@ -76,8 +83,8 @@ bool tourIsStructurallyValid(const TourResult& result, const Graph& graph)
     return true;
 }
 
-// Recomputes the tour length straight from the graph's edge weights,
-// so we never trust the number the algorithm reported about itself.
+// Recomputes the tour length straight from the graph's edge weights.
+// should have a totalDistance equal to the sum of its edges in the graph.
 double recomputeTourLength(const TourResult& result, const Graph& graph)
 {
     double total = 0.0;
@@ -88,10 +95,10 @@ double recomputeTourLength(const TourResult& result, const Graph& graph)
     return total;
 }
 
-} // anonymous namespace
+}
 
 // ---------------------------------------------------------------------------
-// The actual test routine
+// Test routine
 // ---------------------------------------------------------------------------
 
 void runTSPTests(const std::string& directory)
@@ -100,6 +107,8 @@ void runTSPTests(const std::string& directory)
     std::cout << std::fixed << std::setprecision(2);
 
     int skippedCtr = 0;
+
+    int precision = 2;
 
     std::vector<std::string> files = getGraphFiles(directory);
     if (files.empty()) {
@@ -118,38 +127,38 @@ void runTSPTests(const std::string& directory)
         TourResult bb = branchAndBound(graph);
 
         if (cs.totalDistance == 0 && bb.totalDistance == 0){
-            std::cout << "\t[SKIPPED] Graph size is beyond threshold." << "\n";
+            std::cout << "[SKIPPED] Graph size is beyond threshold." << "\n";
             skippedCtr++;
             continue;
         };
 
-        // 1. Both tours are structurally valid
+        // Check tour structural validity
         check(tourIsStructurallyValid(cs, graph),
               "complete search returns a valid tour");
         check(tourIsStructurallyValid(bb, graph),
               "branch & bound returns a valid tour");
 
-        // 2. Reported distance matches a fresh recomputation from the graph
+        // Distance matches a fresh recomputation from the graph
         check(approxEqual(cs.totalDistance, recomputeTourLength(cs, graph)),
               "complete search distance matches its tour");
         check(approxEqual(bb.totalDistance, recomputeTourLength(bb, graph)),
               "branch & bound distance matches its tour");
 
-        // 3. The two exact algorithms must agree on the optimal length
+        // Both completeSearch and Branch&Bound must deliver same totalDistance
         check(approxEqual(cs.totalDistance, bb.totalDistance),
               "complete search and branch & bound agree ("
-                  + std::to_string(cs.totalDistance) + " vs "
-                  + std::to_string(bb.totalDistance) + ")");
+                  + roundDoubleToString(cs.totalDistance, precision) + " vs "
+                  + roundDoubleToString(bb.totalDistance, precision) + ")");
 
-        // 4. Where the professor gave an optimum, both must match it
+        // Compare with known optima
         auto known = KNOWN_OPTIMA.find(name);
         if (known != KNOWN_OPTIMA.end()) {
             check(approxEqual(cs.totalDistance, known->second),
                   "complete search matches known optimum ("
-                      + std::to_string(known->second) + ")");
+                      + roundDoubleToString(known->second, precision) + ")");
             check(approxEqual(bb.totalDistance, known->second),
                   "branch & bound matches known optimum ("
-                      + std::to_string(known->second) + ")");
+                      + roundDoubleToString(known->second, precision) + ")");
         } else {
             std::cout << "  [INFO] no published optimum for this graph; "
                          "checked internal consistency only\n";

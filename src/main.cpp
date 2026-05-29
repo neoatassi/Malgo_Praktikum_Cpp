@@ -17,6 +17,9 @@
 #include "../include/tests.h"
 #include "../include/tsp.h"
 
+
+int maxNodes =12;
+
 void printUsage(const char* programName)
 {
     std::cerr << "Usage:\n"
@@ -116,7 +119,7 @@ void printUsage(const char* programName)
         graph = loadGraph(filepath, "UndirectedGraph");
         // TourResult result = nearestNeighbor(*graph, 0);
         TourResult result(graph->getCount() + 1);
-        result = completeSearch(*graph);
+        result = completeSearch(*graph, maxNodes);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         
@@ -139,7 +142,7 @@ void printUsage(const char* programName)
         graph = loadGraph(filepath, "UndirectedGraph");
         // TourResult result = nearestNeighbor(*graph, 0);
         TourResult result(graph->getCount() + 1);
-        result = branchAndBound(*graph);
+        result = branchAndBound(*graph, maxNodes);
         auto end = std::chrono::high_resolution_clock::now();
         double ms = std::chrono::duration<double, std::milli>(end - start).count();
         
@@ -198,6 +201,8 @@ int main(int argc, char* argv[])
             CIRCUIT_PRINT = false;
         } else if (arg == "--best-nn") {
             BEST_NN = true;
+        } else if (arg == "--maxNodes" && i + 1 < argc) {
+            maxNodes = std::stoi(argv[++i]);
         } else {
             std::cerr << "Unknown argument: " << arg << "\n";
             printUsage(argv[0]);

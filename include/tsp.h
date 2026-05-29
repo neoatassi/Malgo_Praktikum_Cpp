@@ -33,7 +33,7 @@ struct SearchState {
         : graph(graph),
           visited(graph.getCount(), '0'),
           currentDistance(0.0),
-          best(std::move(initialBest))
+          best(std::move(initialBest)) // seeding with initialBest means best doesn't start at infinity
     {
         currentTour.reserve(graph.getCount() + 1);
     }
@@ -42,5 +42,5 @@ struct SearchState {
 TourResult nearestNeighbor(const Graph& graph, int start);
 TourResult nearestNeighborBest (const Graph& graph);
 TourResult doubleTree (const Graph& graph);
-TourResult completeSearch(const Graph& graph);
-TourResult branchAndBound(const Graph& graph);
+TourResult completeSearch(const Graph& graph, int maxNodes = 12);
+TourResult branchAndBound(const Graph& graph, int maxNodes = 12);
